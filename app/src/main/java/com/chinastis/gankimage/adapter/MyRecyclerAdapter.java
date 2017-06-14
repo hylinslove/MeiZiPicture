@@ -50,7 +50,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         Picasso
                 .with(context)
                 .load(images.get(position).getUrl())
-                .resize(200,300)
+                .resize(400,500)
                 .centerCrop()
                 .into(holder.imageItem);
 
