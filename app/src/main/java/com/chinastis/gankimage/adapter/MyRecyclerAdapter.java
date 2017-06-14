@@ -66,6 +66,11 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         this.notifyDataSetChanged();
     }
 
+    public void replace(List<ImageBean.ResultsBean> list) {
+        this.images = list;
+        this.notifyDataSetChanged();
+    }
+
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
