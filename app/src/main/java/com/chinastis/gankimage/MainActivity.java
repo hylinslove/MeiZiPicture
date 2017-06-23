@@ -89,8 +89,10 @@ public class MainActivity extends AppCompatActivity implements ImageClickListene
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         Snackbar.make(mRecyclerView,"网络连接失败",Snackbar.LENGTH_LONG).show();
                         isLoading = false;
+
                     }
 
                     @Override
