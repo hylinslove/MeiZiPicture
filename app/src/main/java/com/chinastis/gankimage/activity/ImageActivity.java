@@ -29,9 +29,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import uk.co.senab.photoview.PhotoView;
+
 public class ImageActivity extends AppCompatActivity {
 
-    private ImageView bigImage;
+    private PhotoView bigImage;
     private String filePath;
     private File imageFile;
 
@@ -42,7 +44,15 @@ public class ImageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
-        bigImage = (ImageView) findViewById(R.id.big_image_image);
+        bigImage = (PhotoView) findViewById(R.id.big_image_image);
+        bigImage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                ImageActivity.this.openContextMenu(bigImage);
+
+                return true;
+            }
+        });
         registerForContextMenu(bigImage);
 
         url = getIntent().getStringExtra("url");

@@ -44,13 +44,7 @@ public class MainActivity extends AppCompatActivity implements ImageClickListene
     private MyRecyclerAdapter adapter;
     private Toolbar toolbar;
 
-    private int page = 1;
-    private int tempPage;
-
     private boolean isLoading;
-
-    private Dialog dialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +54,6 @@ public class MainActivity extends AppCompatActivity implements ImageClickListene
         toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
-        setMenuClick();
-
-        initDialog();
 
         mRecyclerView = (RecyclerView) findViewById(recycler_main);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
@@ -77,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements ImageClickListene
         isLoading = true;
         RetrofitClient.getRetrofit()
                 .create(RetrofitService.class)
-                .getImageData(20,page)
+                .getImageData(20)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<ImageBean>() {
@@ -138,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements ImageClickListene
     @Override
     public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
         if(isSlideToBottom(mRecyclerView) && !isLoading){
-            getData(++page,false);
+            getData(0,false);
         }
     }
 
@@ -151,51 +142,5 @@ public class MainActivity extends AppCompatActivity implements ImageClickListene
         startActivity(intent);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu,menu);
-        return true;
-    }
-
-    public void setMenuClick(){
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-
-                dialog.show();
-
-                return true;
-            }
-        });
-    }
-
-    private void initDialog() {
-        dialog = new Dialog(this);
-        View view = getLayoutInflater().inflate(R.layout.number_picker,null);
-        dialog.setContentView(view);
-        NumberPicker numberPicker = (NumberPicker) view.findViewById(R.id.number_picker_dialog);
-        Button button = (Button) view.findViewById(R.id.ok_dialog);
-
-        numberPicker.setMinValue(1);
-        numberPicker.setMaxValue(25);
-
-        numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                tempPage = newVal;
-            }
-        });
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                page = tempPage;
-                getData(page,true);
-                dialog.dismiss();
-            }
-        });
-
-
-    }
 
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#d4d4d4"
+    android:background="#ffffff"
     tools:context="com.chinastis.gankimage.MainActivity">
 
     <android.support.v7.widget.Toolbar
@@ -18,7 +18,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="3dp">
 
     </android.support.v7.widget.RecyclerView>
 

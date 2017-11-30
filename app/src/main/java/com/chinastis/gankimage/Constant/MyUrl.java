@@ -6,6 +6,6 @@ package com.chinastis.gankimage.Constant;
 
 public class MyUrl {
 
-    public static final String BASE_URL = "http://gank.io/api/data/";
+    public static final String BASE_URL = "http://gank.io/api/";
 
 }

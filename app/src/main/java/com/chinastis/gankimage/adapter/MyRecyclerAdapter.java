@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.chinastis.gankimage.R;
 import com.chinastis.gankimage.bean.ImageBean;
@@ -76,6 +77,8 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 //                .centerCrop()
                 .transform(transformation)
                 .into(holder.imageItem);
+        holder.describe.setText(images.get(position).getDesc());
+
 //
 //        if (position < lastPosition) {
 //            holder.imageItem.startAnimation(negativeAnimation);
@@ -103,20 +106,22 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
     }
 
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView imageItem;
+        TextView describe;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             imageItem = (ImageView) itemView.findViewById(R.id.image_item);
-            imageItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.click(images.get(getLayoutPosition()).getUrl());
-                }
-            });
+            describe = (TextView) itemView.findViewById(R.id.describe_item);
+            imageItem.setOnClickListener(this);
 
+        }
+
+        @Override
+        public void onClick(View v) {
+            listener.click(images.get(getLayoutPosition()).getUrl());
         }
     }
 

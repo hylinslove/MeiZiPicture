@@ -12,7 +12,9 @@ import rx.Observable;
 
 public interface RetrofitService {
 
-    @GET("福利/{num}/{page}")
-    Observable<ImageBean> getImageData(@Path("num") int num, @Path("page") int page);
+//    @GET("福利/{num}/{page}")
+//    Observable<ImageBean> getImageData(@Path("num") int num, @Path("page") int page);
 
+    @GET("random/data/福利/{num}")
+    Observable<ImageBean> getImageData(@Path("num") int num);
 }

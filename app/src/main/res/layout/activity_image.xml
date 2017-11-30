@@ -8,7 +8,7 @@
 
     tools:context="com.chinastis.gankimage.activity.ImageActivity">
 
-    <ImageView
+    <uk.co.senab.photoview.PhotoView
         android:id="@+id/big_image_image"
         android:layout_centerInParent="true"
         android:scaleType="fitCenter"
