@@ -17,4 +17,7 @@ public interface RetrofitService {
 
     @GET("random/data/福利/{num}")
     Observable<ImageBean> getImageData(@Path("num") int num);
+
+    @GET("random/data/休息视频/{num}")
+    Observable<ImageBean> getVideoData(@Path("num") int num);
 }

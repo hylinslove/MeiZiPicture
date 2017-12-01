@@ -1,145 +1,68 @@
 package com.chinastis.gankimage;
 
-import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.ImageFormat;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
+
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.NumberPicker;
 
-import com.chinastis.gankimage.activity.ImageActivity;
-import com.chinastis.gankimage.adapter.MyRecyclerAdapter;
-import com.chinastis.gankimage.bean.ImageBean;
-import com.chinastis.gankimage.listener.ImageClickListener;
-import com.chinastis.gankimage.net.RetrofitClient;
-import com.chinastis.gankimage.net.RetrofitService;
+import com.chinastis.gankimage.adapter.MediaViewPagerAdapter;
+import com.chinastis.gankimage.fragment.ImageFragment;
+import com.chinastis.gankimage.fragment.VideoFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
-import static com.chinastis.gankimage.R.id.recycler_main;
-
 @RequiresApi(api = Build.VERSION_CODES.M)
-public class MainActivity extends AppCompatActivity implements ImageClickListener,RecyclerView.OnScrollChangeListener {
+public class MainActivity extends AppCompatActivity  {
 
-    private RecyclerView mRecyclerView;
-    private MyRecyclerAdapter adapter;
     private Toolbar toolbar;
-
-    private boolean isLoading;
+    private TabLayout mTab;
+    private ViewPager contentViewPager;
+    private List<Fragment> fragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initFragment();
+
+        initView();
+
+    }
+
+    private void initFragment() {
+        fragments = new ArrayList<>();
+
+        ImageFragment imageFragment = new ImageFragment();
+        VideoFragment videoFragment = new VideoFragment();
+        fragments.add(imageFragment);
+        fragments.add(videoFragment);
+
+    }
+
+    private void initView() {
         toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setNavigationIcon(R.mipmap.ic_launcher);
         setSupportActionBar(toolbar);
 
-        mRecyclerView = (RecyclerView) findViewById(recycler_main);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
-        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,RecyclerView.VERTICAL));
-        mRecyclerView.setOnScrollChangeListener(this);
 
-        getData(1,false);
-    }
+        mTab = (TabLayout) findViewById(R.id.tab_main);
+        contentViewPager = (ViewPager) findViewById(R.id.pager_main);
 
+        MediaViewPagerAdapter adapter = new MediaViewPagerAdapter(getSupportFragmentManager(),fragments);
+        contentViewPager.setAdapter(adapter);
+        mTab.setupWithViewPager(contentViewPager);
 
-    private void getData(int page, final boolean isSelect) {
-        isLoading = true;
-        RetrofitClient.getRetrofit()
-                .create(RetrofitService.class)
-                .getImageData(20)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<ImageBean>() {
-                    @Override
-                    public void onCompleted() {
-                        Snackbar.make(mRecyclerView,"加载完成",Snackbar.LENGTH_SHORT).show();
-                        isLoading = false;
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        Snackbar.make(mRecyclerView,"网络连接失败",Snackbar.LENGTH_LONG).show();
-                        isLoading = false;
-
-                    }
-
-                    @Override
-                    public void onNext(ImageBean imageBean) {
-                        List<ImageBean.ResultsBean> images = imageBean.getResults();
-
-                        if(isSelect){
-                            replaceData(images);
-                        } else {
-                            dataChanged(images);
-                        }
-                    }
-                });
-    }
-
-    private void dataChanged(List<ImageBean.ResultsBean> list) {
-        if(adapter == null){
-            adapter = new MyRecyclerAdapter(this,list);
-            adapter.setListener(this);
-            mRecyclerView.setAdapter(adapter);
-        } else {
-            adapter.addData(list);
-        }
-
-    }
-
-    private void replaceData(List<ImageBean.ResultsBean> list) {
-        if(adapter == null){
-            adapter = new MyRecyclerAdapter(this,list);
-            adapter.setListener(this);
-            mRecyclerView.setAdapter(adapter);
-        } else {
-            adapter.replace(list);
-        }
-
-    }
-
-    public static boolean isSlideToBottom(RecyclerView recyclerView) {
-        return recyclerView != null && recyclerView.computeVerticalScrollExtent() + recyclerView.computeVerticalScrollOffset() >= recyclerView.computeVerticalScrollRange();
-    }
-
-
-    @Override
-    public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        if(isSlideToBottom(mRecyclerView) && !isLoading){
-            getData(0,false);
-        }
-    }
-
-    @Override
-    public void click(String url) {
-
-        Intent intent = new Intent(this, ImageActivity.class);
-        intent.putExtra("url",url);
-
-        startActivity(intent);
     }
 
 

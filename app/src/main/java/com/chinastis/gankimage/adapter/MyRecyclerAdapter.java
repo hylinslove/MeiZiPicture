@@ -24,7 +24,7 @@ import com.squareup.picasso.Transformation;
 import java.util.List;
 
 
-public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyViewHolder> {
+public class MyRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
     private List<ImageBean.ResultsBean> images;
@@ -33,11 +33,6 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
     private ImageClickListener listener;
 
     private Transformation transformation;
-
-    private Animation animation;
-    private Animation negativeAnimation;
-
-    private int lastPosition;
 
     public void setListener(ImageClickListener listener) {
         this.listener = listener;
@@ -49,44 +44,44 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         inflater = LayoutInflater.from(context);
 
         transformation = getTrans();
-        animation = AnimationUtils.loadAnimation(context,R.anim.image_item_anni);
-        negativeAnimation = AnimationUtils.loadAnimation(context,R.anim.image_item_anni_negative);
-
-        lastPosition = 0;
-
 
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        View view = inflater.inflate(R.layout.image_item,parent,false);
-
-        MyViewHolder viewHolder = new MyViewHolder(view);
-
-        return viewHolder;
+    public int getItemViewType(int position) {
+        return images.get(position).getType().equals("福利")?0:1;
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        Picasso
-                .with(context)
-                .load(images.get(position).getUrl())
-//                .resize(400,500)
-//                .centerCrop()
-                .transform(transformation)
-                .into(holder.imageItem);
-        holder.describe.setText(images.get(position).getDesc());
+        if(viewType == 0) {
+            View view = inflater.inflate(R.layout.image_item,parent,false);
 
-//
-//        if (position < lastPosition) {
-//            holder.imageItem.startAnimation(negativeAnimation);
-//        } else {
-//            holder.imageItem.startAnimation(animation);
-//        }
-//
-//        lastPosition = position;
+            MyViewHolder viewHolder = new MyViewHolder(view);
+
+            return viewHolder;
+        } else {
+            View view = inflater.inflate(R.layout.video_item,parent,false);
+
+            VideoViewHolder viewHolder = new VideoViewHolder(view);
+
+            return viewHolder;
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if(getItemViewType(position) == 0) {
+            Picasso.with(context)
+                    .load(images.get(position).getUrl())
+                    .transform(transformation)
+                    .into(((MyViewHolder)holder).imageItem);
+            ((MyViewHolder)holder).describe.setText(images.get(position).getDesc());
+        } else {
+            ((VideoViewHolder)holder).title.setText(images.get(position).getDesc());
+            ((VideoViewHolder)holder).date.setText(images.get(position).getPublishedAt());
+        }
 
     }
 
@@ -106,12 +101,12 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
     }
 
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView imageItem;
         TextView describe;
 
-        public MyViewHolder(View itemView) {
+        private MyViewHolder(View itemView) {
             super(itemView);
             imageItem = (ImageView) itemView.findViewById(R.id.image_item);
             describe = (TextView) itemView.findViewById(R.id.describe_item);
@@ -125,8 +120,27 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         }
     }
 
+    private class VideoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-    public Transformation getTrans() {
+        TextView title;
+        TextView date;
+
+        private VideoViewHolder(View itemView) {
+            super(itemView);
+            title = (TextView) itemView.findViewById(R.id.title_video_item);
+            date = (TextView) itemView.findViewById(R.id.date_video_item);
+            itemView.setOnClickListener(this);
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            listener.click(images.get(getLayoutPosition()).getUrl());
+        }
+    }
+
+
+    private Transformation getTrans() {
 
         WindowManager wm = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
